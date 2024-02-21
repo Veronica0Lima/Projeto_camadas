@@ -22,7 +22,7 @@ import numpy as np
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM7"                  # Windows(variacao de)
+serialName = "COM6"                  # Windows(variacao de)
 
 
 def main():
@@ -42,37 +42,6 @@ def main():
         #Se chegamos até aqui, a comunicação foi aberta com sucesso. Faça um print para informar.
         print("Abriu a comunicação")
         
-           
-                  
-        #aqui você deverá gerar os dados a serem transmitidos. 
-        #seus dados a serem transmitidos são um array bytes a serem transmitidos. Gere esta lista com o 
-        #nome de txBuffer. Esla sempre irá armazenar os dados a serem enviados.
-        
-        txBuffer = open(imgD, 'rb').read()
-        #txBuffer = b'\x12\x13\xAA'  #isso é um array de bytes
-       
-        print("meu array de bytes tem tamanho {}" .format(len(txBuffer)))
-        #faça aqui uma conferência do tamanho do seu txBuffer, ou seja, quantos bytes serão enviados.
-       
-            
-        #finalmente vamos transmitir os todos. Para isso usamos a funçao sendData que é um método da camada enlace.
-        #faça um print para avisar que a transmissão vai começar.
-        #tente entender como o método send funciona!
-        #Cuidado! Apenas trasmita arrays de bytes!
-               
-        print("Iniciando a transmissão...")
-        com1.sendData(np.asarray(txBuffer))  #as array apenas como boa pratica para casos de ter uma outra forma de dados
-          
-        # A camada enlace possui uma camada inferior, TX possui um método para conhecermos o status da transmissão
-        # O método não deve estar fincionando quando usado como abaixo. deve estar retornando zero. Tente entender como esse método funciona e faça-o funcionar.
-        
-        #----------------------------------------------------
-        while com1.tx.threadMutex:
-            time.sleep(0.05) 
-        #---------------------------------------------------- 
-        txSize = com1.tx.getStatus()
-        print('enviou = {}' .format(txSize))
-        
         #Agora vamos iniciar a recepção dos dados. Se algo chegou ao RX, deve estar automaticamente guardado
         #Observe o que faz a rotina dentro do thread RX
         #print um aviso de que a recepção vai começar.
@@ -81,8 +50,7 @@ def main():
         #Veja o que faz a funcao do enlaceRX  getBufferLen
       
         #acesso aos bytes recebidos
-        txLen = len(txBuffer)
-        rxBuffer, nRx = com1.getData(txLen)
+        rxBuffer = com1.getData(8)
         print("recebeu {} bytes" .format(len(rxBuffer)))
         
         # for i in range(len(rxBuffer)):
