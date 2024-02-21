@@ -42,3 +42,7 @@ class enlace(object):
     def getData(self, size):
         data = self.rx.getNData(size)
         return(data, len(data))
+    
+    def getAllBuffer(self):
+        data = self.rx.getAllBuffer()
+        return(data)
