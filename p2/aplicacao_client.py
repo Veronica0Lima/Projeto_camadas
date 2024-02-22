@@ -23,10 +23,13 @@ def main():
         com1 = enlace(serialName)
 
         com1.enable()
+        time.sleep(.2)
+        com1.sendData(b'00')
+        time.sleep(1)
+
         print("Abriu a comunicação")
 
         comandos_bytearray = [ b'\x00\x00\x00\x00', b'\x00\x00\xFF\x00' ,b'\xFF\x00\x00', b'\x00\xFF\x00' , b'\x00\x00\xFF', b'\x00\xFF ', b'\xFF\x00', b'\x00',b'\xFF' ]
-        comando_bin = []
         mensagem = b''
         n_comandos = random.randint(0, 4)
         print("o numero de comandos sorteados foi ", n_comandos)
@@ -41,27 +44,22 @@ def main():
 
         for i in range(n_comandos):
             indice = random.randint(0, 8)
-            mensagem = mensagem + comandos_bytearray[indice] + b'\x10\x10\x10\x10'
+            mensagem = mensagem + comandos_bytearray[indice] + b'\xaa'
         
         print(mensagem)
 
         caracteres = len(mensagem)
         bi = bin(caracteres)[2:]
         b = bi.zfill(8)
-        byte_array = bytearray(b, 'utf-8')
-
+        inteiro = int(b, 2)
+        byte_array = inteiro.to_bytes((len(b) + 7) // 8, 'big')
+        #print("AAAAAAAAAAAAAAAAAAAAAAA",caracteres, byte_array)
         mensagem = byte_array + mensagem
-
-        #print("AAAAAAAAA", caracteres, b)
-
-
-        # imgD = "./dr.jpeg"
-        # txBuffer = open(imgD, 'rb').read()       
-        # print("meu array de bytes tem tamanho {}" .format(len(txBuffer)))       
+     
+        print("meu array de bytes tem tamanho {}" .format(len(mensagem)))       
             
-
-        # print("Iniciando a transmissão...")
-        # com1.sendData(np.asarray(mensagem)) 
+        print("Iniciando a transmissão da mensagem...")
+        com1.sendData(np.asarray(mensagem)) 
         
         #----------------------------------------------------
         while com1.tx.threadMutex:
@@ -70,7 +68,12 @@ def main():
         txSize = com1.tx.getStatus()
         print('enviou = {}' .format(txSize))
             
-    
+        print("A recepção da resposta vai começar...")
+        print("esperando 1 byte de sacrifício")
+        rxBuffer, nRx = com1.getData(1)
+        com1.rx.clearBuffer()
+        time.sleep(.1)
+        tamanho, a = com1.getData(1)
         # Encerra comunicação
         print("-------------------------")
         print("Comunicação encerrada")
