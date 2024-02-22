@@ -18,7 +18,6 @@ def main():
         
         print("A recepção do tamanho vai começar...")
         tam, a = com1.getData(1)
-        print("Recebeu {} bytes" .format(a))
         print("Dados recebidos:", tam)
 
         tamanho = int.from_bytes(tam, byteorder='big') 
@@ -40,11 +39,22 @@ def main():
         inteiro = int(b, 2)
         byte_array = inteiro.to_bytes((len(b) + 7) // 8, 'big')
 
+        bi = bin(len(partes))[2:] 
+        b = bi.zfill(8)
+        inteiro = int(b, 2) +1
+        byte_array_errado = inteiro.to_bytes((len(b) + 7) // 8, 'big')
+
         print("Iniciando a transmissão da mensagem da quantidade de comandos...")
+        #----------------------- timer para atrasar
+        #time.sleep(8)
+        #-------------------------------------------
         time.sleep(.2)
         com1.sendData(b'00')
         time.sleep(1)
+        # --------------------- comando para mandar certo
         com1.sendData(np.asarray(byte_array)) 
+        #--------------------- comando para mandar errado
+        #com1.sendData(np.asarray(byte_array_errado)) 
 
         print("-------------------------")
         print("Comunicação encerrada")

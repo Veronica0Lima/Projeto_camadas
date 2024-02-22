@@ -1,5 +1,3 @@
-
-
 from enlace import *
 import time
 import numpy as np
@@ -16,7 +14,6 @@ import random
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
 serialName = "COM6"                  # Windows(variacao de)
 
-
 def main():
     try:
         print("Iniciou o main")
@@ -31,32 +28,23 @@ def main():
 
         comandos_bytearray = [ b'\x00\x00\x00\x00', b'\x00\x00\xFF\x00' ,b'\xFF\x00\x00', b'\x00\xFF\x00' , b'\x00\x00\xFF', b'\x00\xFF ', b'\xFF\x00', b'\x00',b'\xFF' ]
         mensagem = b''
-        n_comandos = random.randint(0, 4)
+        n_comandos = random.randint(10, 30)
         print("o numero de comandos sorteados foi ", n_comandos)
-
-        # for comando in comandos_hexa:
-        #     decimal = int(comando, 16)
-        #     binario = bin(decimal)
-        #     binario = binario[2:]
-        #     comando_bin.append(binario)
-
-        #print(comandos_bytearray)
 
         for i in range(n_comandos):
             indice = random.randint(0, 8)
             mensagem = mensagem + comandos_bytearray[indice] + b'\xaa'
         
-        print(mensagem)
+        #print(mensagem)
 
         caracteres = len(mensagem)
         bi = bin(caracteres)[2:]
         b = bi.zfill(8)
         inteiro = int(b, 2)
         byte_array = inteiro.to_bytes((len(b) + 7) // 8, 'big')
-        #print("AAAAAAAAAAAAAAAAAAAAAAA",caracteres, byte_array)
         mensagem = byte_array + mensagem
      
-        print("meu array de bytes tem tamanho {}" .format(len(mensagem)))       
+        #print("meu array de bytes tem tamanho {}" .format(len(mensagem)))       
             
         print("Iniciando a transmissão da mensagem...")
         com1.sendData(np.asarray(mensagem)) 
@@ -70,10 +58,29 @@ def main():
             
         print("A recepção da resposta vai começar...")
         print("esperando 1 byte de sacrifício")
-        rxBuffer, nRx = com1.getData(1)
-        com1.rx.clearBuffer()
-        time.sleep(.1)
-        tamanho, a = com1.getData(1)
+        
+        start_time = time.time()
+
+        # Loop para aguardar a resposta com timeout de 5 segundos
+        while True:
+            rxBuffer, nRx = com1.getData(1)
+            com1.rx.clearBuffer()
+            time.sleep(.1)
+            if nRx > 0 and (time.time() - start_time) < 5:
+                print("Resposta recebida com sucesso.")
+                tamanho, a = com1.getData(1)  
+                print(int.from_bytes(tamanho, byteorder='big'))
+
+                if int.from_bytes(tamanho, byteorder='big') == n_comandos:
+                    print('Número de comandos certo')
+                else:
+                    print("Número de comandos errado")
+                break
+            elif time.time() - start_time >= 5:
+                print("Timeout excedido. Nenhuma resposta recebida.")
+                break
+
+
         # Encerra comunicação
         print("-------------------------")
         print("Comunicação encerrada")
