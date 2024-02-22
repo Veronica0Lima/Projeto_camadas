@@ -63,11 +63,12 @@ def main():
 
         # Loop para aguardar a resposta com timeout de 5 segundos
         while True:
-            rxBuffer, nRx = com1.getData(1)
-            com1.rx.clearBuffer()
-            time.sleep(.1)
-            if nRx > 0 and (time.time() - start_time) < 5:
+            l = com1.rx.getBufferLen()
+            if l > 0 and (time.time() - start_time) < 5:
                 print("Resposta recebida com sucesso.")
+                rxBuffer, nRx = com1.getData(1)
+                com1.rx.clearBuffer()
+                time.sleep(.1)
                 tamanho, a = com1.getData(1)  
                 print(int.from_bytes(tamanho, byteorder='big'))
 
