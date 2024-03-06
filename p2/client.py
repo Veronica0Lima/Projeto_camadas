@@ -31,21 +31,11 @@ def main():
         # Loop para aguardar a resposta com timeout de 5 segundos
         while True:
             l = com1.rx.getBufferLen()
-            if l > 0 and (time.time() - start_time) < 5:
+            print(l)
+            if l > 0:
                 print("Resposta recebida com sucesso.")
                 rxBuffer, nRx = com1.getData(1)
-                com1.rx.clearBuffer()
-                time.sleep(.1)
-                tamanho, a = com1.getData(1)  
-                print(int.from_bytes(tamanho, byteorder='big'))
-
-                if int.from_bytes(tamanho, byteorder='big') == 2:
-                    print('Número de comandos certo')
-                else:
-                    print("Número de comandos errado")
-                break
-            elif time.time() - start_time >= 5:
-                print("Timeout excedido. Nenhuma resposta recebida.")
+                print(rxBuffer)
                 break
 
 
