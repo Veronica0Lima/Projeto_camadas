@@ -52,9 +52,9 @@ def main():
         com1.sendData(b'00')
         time.sleep(1)
         # --------------------- comando para mandar certo
-        com1.sendData(np.asarray(byte_array)) 
+        #com1.sendData(np.asarray(byte_array)) 
         #--------------------- comando para mandar errado
-        #com1.sendData(np.asarray(byte_array_errado)) 
+        com1.sendData(np.asarray(byte_array_errado)) 
 
         print("-------------------------")
         print("Comunicação encerrada")
