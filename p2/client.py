@@ -44,9 +44,6 @@ def main():
         eop = b'\xFF\xaa\xff\xaa'
         i1 = 1
         i2 = 1
-        
-        # arquivo1 = open(imgD, 'rb').read()
-        # print("meu array de bytes tem tamanho {}" .format(len(arquivo1)))
 
         
         packages_f = divisor_bytes(imgD)
@@ -91,12 +88,30 @@ def main():
                         
                         resposta_intermediaria, _ = com1.getData(10)
 
+                        # Caso o server mande que recebeu com erro - manda o mesmo pacote de novo
                         if resposta_intermediaria[0] == 6:
-                            break
+                            if resposta_intermediaria[1] == i1:
+                                break
+
+                        # Indo para o próximo arquivo caso o server diga que ta tudo ok 
+                        elif resposta_intermediaria[0] == 4:
+                            if resposta_intermediaria[1] == i1:
+                                i1 += 1
+                                break
 
                     elif time.time() - start_time >= 3:
                         com1.sendData(mensagem3)
                         start_time = time.time()
+
+                    elif time.time() - tempo_inicial >= 10:
+                        print("-------------------------")
+                        print(" Tempo excedido. Comunicação encerrada")
+                        print("-------------------------")
+                        head5 = b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+                        mensagem5 = monta_mensagem(head5)
+                        com1.sendData(mensagem5)
+                        com1.disable()
+                        break
                 
 
 
