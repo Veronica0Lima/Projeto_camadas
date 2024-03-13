@@ -26,10 +26,32 @@ def main():
         time.sleep(.1)
         print("Comunicação estabelecida")
 
-        time.sleep(.2)
-        com1.sendData(b'00')
-        print("Enviado")
-        time.sleep(1)
+        para_receber = True
+        while para_receber:
+            h, _ = com1.getData(10)
+            time.sleep(.1)
+
+            if(h[0] == b'\x01'):
+                total_pacotes = int(h[2])
+                nome = h[3]
+
+                payload, size = com1.getData(total_pacotes)
+                time.sleep(.1)
+            elif(h[0] == b'\x02'):
+                pass
+            elif(h[0] == b'\x03'):
+                pass
+            elif(h[0] == b'\x04'):
+                pass
+            elif(h[0] == b'\x05'):
+                pass
+            elif(h[0] == b'\x06'):
+                pass
+
+        # mensagem = b'\x01'
+        # time.sleep(.1)
+        # com1.sendData(mensagem)
+        # time.sleep(.2)
 
         # Encerra comunicação
         print("-------------------------")
