@@ -14,6 +14,7 @@ import random
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
 serialName = "COM4"                  # Windows(variacao de)
 
+
 def main():
     try:
         print("Iniciou o main")
@@ -28,6 +29,10 @@ def main():
 
         com1.sendData(b'\x02\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00')
 
+        time.sleep(.2)
+        com1.sendData(b'00')
+        print("Enviado")
+        time.sleep(1)
 
         # Encerra comunicação
         print("-------------------------")
