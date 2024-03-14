@@ -57,17 +57,18 @@ def main():
                         payload_size = msg_t3_head[4]
 
                         msg_t3_payload, _ = com1.getData(payload_size)
-                        time.sleep(.1)
-
                         msg_t3_eop, _ = com1.getData(4)
-                        time.sleep(.1)
 
                         if msg_t3_eop == eop and id == i:
                             mensagem_invalida = False
                         else:
-                            msg_t6 = monta_mensagem(head=b'\x06\x00\x00\x00\x00\x00'+ i + b'\x00\x00\x00')
+                            if msg_t3_eop != eop:
+                                type_error = b'\x01'
+                            else:
+                                type_error = b'\x02'
+                            msg_t6 = monta_mensagem(head=b'\x06\x00\x00' + type_error + '\x00\x00'+ i + b'\x00\x00\x00')
                             com1.sendData(msg_t6)
-                            time.sleep(.1)
+                            start_time = time.time()
                         break
                 else:
                     msg_t5 = monta_mensagem(head=b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00')
