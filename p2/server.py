@@ -14,12 +14,6 @@ import random
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
 serialName = "COM4"                  # Windows(variacao de)
 
-def verifica_eop(data):
-    size = len(data)
-    eop = data[size-4:size]
-
-    return eop == b'\xFF\xaa\xff\xaa'
-
 def monta_mensagem(head, payload = b'', eop = b'\xFF\xaa\xff\xaa'):
     mensagem = head + payload + eop
     return mensagem
@@ -42,6 +36,7 @@ def main():
         id = msg_t1[1]
         total_pacotes = msg_t1[2]
         nome = msg_t1[3]
+        nome_copia = nome + '_copia.jpeg'
 
         eop = b'\xFF\xaa\xff\xaa'
 
@@ -54,30 +49,41 @@ def main():
             mensagem_invalida = True
             while mensagem_invalida:
                 start_time = time.time()
-                wait = True
+                while(time.time() - start_time < 10):
+                    if(time.time() - start_time >= 3):
+                        msg_t3_head = com1.getData(10)
 
-                while wait:
-                    if time.time() - start_time > 3:
-                        wait = False
+                        id = msg_t3_head[1]
+                        payload_size = msg_t3_head[4]
 
-                msg_t3_head = com1.getData(10)
+                        msg_t3_payload, _ = com1.getData(payload_size)
+                        time.sleep(.1)
 
-                id = msg_t3_head[1]
-                payload_size = msg_t3_head[4]
+                        msg_t3_eop, _ = com1.getData(4)
+                        time.sleep(.1)
 
-                msg_t3_payload, _ = com1.getData(payload_size)
-                time.sleep(.1)
-
-                msg_t3_eop, _ = com1.getData(4)
-                time.sleep(.1)
-
-                if msg_t3_eop == eop and id == i:
-                    mensagem_invalida = False
+                        if msg_t3_eop == eop and id == i:
+                            mensagem_invalida = False
+                        else:
+                            msg_t6 = monta_mensagem(head=b'\x06\x00\x00\x00\x00\x00'+ i + b'\x00\x00\x00')
+                            com1.sendData(msg_t6)
+                            time.sleep(.1)
+                        break
                 else:
-                    msg_t6 = monta_mensagem(head=b'\x06\x00\x00\x00\x00\x00'+ i + b'\x00\x00\x00')
-                    com1.sendData(msg_t6)
-                    time.sleep(.1)
+                    msg_t5 = monta_mensagem(head=b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+                    com1.sendData(msg_t5)
+
+                    print("-------------------------------------")
+                    print("Tempo excedido! Comunicação encerrada")
+                    print("-------------------------------------")
+                    com1.disable()
+            
             msg_t4 = monta_mensagem(head=b'\x04'+ i + '\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+            com1.sendData(msg_t4)
+
+            with open(nome_copia, 'a') as file:
+                file.write(str(msg_t3_payload))
+
             com1.sendData(msg_t4)
             time.sleep(.1)
             i += 1
