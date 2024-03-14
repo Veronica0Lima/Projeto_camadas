@@ -14,6 +14,15 @@ import random
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
 serialName = "COM4"                  # Windows(variacao de)
 
+def verifica_eop(data):
+    size = len(data)
+    eop = data[size-4:size]
+
+    return eop == b'\xFF\xaa\xff\xaa'
+
+def monta_mensagem(head, payload = b'', eop = b'\xFF\xaa\xff\xaa'):
+    mensagem = head + payload + eop
+    return mensagem
 
 def main():
     try:
@@ -27,29 +36,51 @@ def main():
         time.sleep(.1)
         print("Comunicação estabelecida")
 
-        com1.sendData(b'\x02\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00')
+        msg_t1, _ = com1.getData(14)
+        time.sleep(.1)
 
-        para_receber = True
-        while para_receber:
-            h, _ = com1.getData(10)
-            time.sleep(.1)
+        id = msg_t1[1]
+        total_pacotes = msg_t1[2]
+        nome = msg_t1[3]
 
-            if(h[0] == b'\x01'):
-                total_pacotes = int(h[2])
-                nome = h[3]
+        eop = b'\xFF\xaa\xff\xaa'
 
-                payload, size = com1.getData(total_pacotes)
+        msg_t2 = monta_mensagem(head=b'\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+        com1.sendData(msg_t2)
+        time.sleep(.1)
+
+        i = 0
+        while i < total_pacotes:
+            mensagem_invalida = True
+            while mensagem_invalida:
+                start_time = time.time()
+                wait = True
+
+                while wait:
+                    if time.time() - start_time > 3:
+                        wait = False
+
+                msg_t3_head = com1.getData(10)
+
+                id = msg_t3_head[1]
+                payload_size = msg_t3_head[4]
+
+                msg_t3_payload, _ = com1.getData(payload_size)
                 time.sleep(.1)
-            elif(h[0] == b'\x02'):
-                pass
-            elif(h[0] == b'\x03'):
-                pass
-            elif(h[0] == b'\x04'):
-                pass
-            elif(h[0] == b'\x05'):
-                pass
-            elif(h[0] == b'\x06'):
-                pass
+
+                msg_t3_eop, _ = com1.getData(4)
+                time.sleep(.1)
+
+                if msg_t3_eop == eop and id == i:
+                    mensagem_invalida = False
+                else:
+                    msg_t6 = monta_mensagem(head=b'\x06\x00\x00\x00\x00\x00'+ i + b'\x00\x00\x00')
+                    com1.sendData(msg_t6)
+                    time.sleep(.1)
+            msg_t4 = monta_mensagem(head=b'\x04'+ i + '\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+            com1.sendData(msg_t4)
+            time.sleep(.1)
+            i += 1
 
         # mensagem = b'\x01'
         # time.sleep(.1)
