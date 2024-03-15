@@ -49,6 +49,7 @@ def main():
         i = 0
         sai = True
         print(total_pacotes)
+        begin = time.time()
 
         data_img = bytearray([])
         
@@ -115,6 +116,7 @@ def main():
         # Encerra comunicação
         print("-------------------------")
         print("Comunicação encerrada")
+        print(f"A transmissão durou {(time.time() - begin):.2f} segundos")
         print("-------------------------")
         com1.disable()
         
