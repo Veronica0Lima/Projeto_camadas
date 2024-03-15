@@ -50,6 +50,8 @@ def main():
         sai = True
         print(total_pacotes)
         start_time = time.time()
+
+        data_img = bytearray([])
         
         while i < total_pacotes and sai:
             mensagem_invalida = True
@@ -99,14 +101,14 @@ def main():
             com1.sendData(msg_t4)
             print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             
-
-            with open(nome_copia, 'a') as file:
-                file.write(str(msg_t3_payload))
+            data_img += msg_t3_payload
 
             print("BBBBBBBBBBBBBBBBBBBBBBB", sai)
 
             i += 1
 
+        with open(nome_copia, 'wb') as file:
+            file.write(data_img)
         # mensagem = b'\x01'
         # time.sleep(.1)
         # com1.sendData(mensagem)
