@@ -49,19 +49,17 @@ def main():
         i = 0
         sai = True
         print(total_pacotes)
-        start_time = time.time()
 
         data_img = bytearray([])
         
         while i < total_pacotes and sai:
             mensagem_invalida = True
-            
-
             while mensagem_invalida:
                 print("DDDDDDDDDDDDDDDD")
                 #if(time.time() - start_time < 10):
                 l = com1.rx.getBufferLen()
-                if True:
+                start_time = time.time()
+                while (time.time() - start_time < 10):
                     msg_t3_head, _ = com1.getData(10) 
                     print(msg_t3_head)
 
@@ -86,16 +84,16 @@ def main():
                         start_time = time.time()
                     print("CCCCCCCCCCCCCCCCCC")
                     break
-                # else:
-                #     msg_t5 = monta_mensagem(head=b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00')
-                #     com1.sendData(msg_t5)
+                else:
+                    msg_t5 = monta_mensagem(head=b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+                    com1.sendData(msg_t5)
 
-                #     print("-------------------------------------")
-                #     print("Tempo excedido! Comunicação encerrada")
-                #     print("-------------------------------------")
-                #     com1.disable()
-                #     sai = False
-                #     break
+                    print("-------------------------------------")
+                    print("Tempo excedido! Comunicação encerrada")
+                    print("-------------------------------------")
+                    com1.disable()
+                    sai = False
+                    break
             
             msg_t4 = monta_mensagem(head=b'\x04'+ bytes([i]) + b'\x00\x00\x00\x00\x00\x00\x00\x00')
             com1.sendData(msg_t4)
