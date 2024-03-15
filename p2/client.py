@@ -94,7 +94,7 @@ def main():
                     if l > 0 and (time.time() - start_time) < 3 and (time.time() - tempo_inicial) < 10:
                         print("RECEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
                         
-                        resposta_intermediaria, a = com1.getData(10)
+                        resposta_intermediaria, a = com1.getData(14)
                         print(resposta_intermediaria, a)
                         eop = verifica_eop(resposta_intermediaria[-4:])
                         print("GGGGGGGGGGGGG", resposta_intermediaria[0])
@@ -104,7 +104,7 @@ def main():
                             #if resposta_intermediaria[1] == i1:
                             print(66666666666666666666666666666666666666)
                             sai = False
-                            com1.clearBuffer()
+                            #com1.clearBuffer()
                             break
 
                         # Indo para o próximo arquivo caso o server diga que ta tudo ok 
@@ -113,7 +113,7 @@ def main():
                             print(4444444444444444444444444444444444)
                             i1 += 1
                             sai = True
-                            com1.clearBuffer()
+                            #com1.clearBuffer()
                             break
 
                     elif time.time() - start_time >= 3:

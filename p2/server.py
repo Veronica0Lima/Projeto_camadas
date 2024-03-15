@@ -14,7 +14,7 @@ import traceback
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM4"                  # Windows(variacao de)
+serialName = "COM5"                  # Windows(variacao de)
 
 def monta_mensagem(head, payload = b'', eop = b'\xFF\xaa\xff\xaa'):
     mensagem = head + payload + eop
@@ -95,7 +95,7 @@ def main():
                 #     sai = False
                 #     break
             
-            msg_t4 = monta_mensagem(head=b'\x04'+ bytes([i]) + b'\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+            msg_t4 = monta_mensagem(head=b'\x04'+ bytes([i]) + b'\x00\x00\x00\x00\x00\x00\x00\x00')
             com1.sendData(msg_t4)
             print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             
