@@ -2,6 +2,8 @@ from enlace import *
 import time
 import numpy as np
 import random
+import traceback
+
 
 
 # voce deverá descomentar e configurar a porta com através da qual ira fazer comunicaçao
@@ -25,7 +27,7 @@ def main():
 
         com1.enable()
         print("esperando 1 byte de sacrifício")
-        rxBuffer, nRx = com1.getData(1)
+        rxBuffer, nRx = com1.getData(1) 
         com1.rx.clearBuffer()
         time.sleep(.1)
         print("Comunicação estabelecida")
@@ -33,9 +35,9 @@ def main():
         msg_t1, _ = com1.getData(14)
         time.sleep(.1)
 
-        id = msg_t1[1]
+        id = msg_t1[0] 
         total_pacotes = msg_t1[2]
-        nome = msg_t1[3]
+        nome = str(msg_t1[3])
         nome_copia = nome + '_copia.jpeg'
 
         eop = b'\xFF\xaa\xff\xaa'
@@ -45,48 +47,64 @@ def main():
         time.sleep(.1)
 
         i = 0
-        while i < total_pacotes:
+        sai = True
+        print(total_pacotes)
+        start_time = time.time()
+        
+        while i < total_pacotes and sai:
             mensagem_invalida = True
-            while mensagem_invalida:
-                start_time = time.time()
-                while(time.time() - start_time < 10):
-                    if(time.time() - start_time >= 3):
-                        msg_t3_head = com1.getData(10)
-
-                        id = msg_t3_head[1]
-                        payload_size = msg_t3_head[4]
-
-                        msg_t3_payload, _ = com1.getData(payload_size)
-                        msg_t3_eop, _ = com1.getData(4)
-
-                        if msg_t3_eop == eop and id == i:
-                            mensagem_invalida = False
-                        else:
-                            if msg_t3_eop != eop:
-                                type_error = b'\x01'
-                            else:
-                                type_error = b'\x02'
-                            msg_t6 = monta_mensagem(head=b'\x06\x00\x00' + type_error + '\x00\x00'+ i + b'\x00\x00\x00')
-                            com1.sendData(msg_t6)
-                            start_time = time.time()
-                        break
-                else:
-                    msg_t5 = monta_mensagem(head=b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00')
-                    com1.sendData(msg_t5)
-
-                    print("-------------------------------------")
-                    print("Tempo excedido! Comunicação encerrada")
-                    print("-------------------------------------")
-                    com1.disable()
             
-            msg_t4 = monta_mensagem(head=b'\x04'+ i + '\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+
+            while mensagem_invalida:
+                print("DDDDDDDDDDDDDDDD")
+                #if(time.time() - start_time < 10):
+                l = com1.rx.getBufferLen()
+                if True:
+                    msg_t3_head, _ = com1.getData(10) 
+                    print(msg_t3_head)
+
+                    id = msg_t3_head[1]
+                    payload_size = msg_t3_head[4]
+
+                    msg_t3_payload, _ = com1.getData(payload_size)
+                    msg_t3_eop, _ = com1.getData(4)
+                    print(msg_t3_eop)
+                    print(i)
+
+                    if msg_t3_eop == eop and (id == i+1):
+                        mensagem_invalida = False
+                    else:
+                        if msg_t3_eop != eop:
+                            type_error = b'\x01'
+
+                        else:
+                            type_error = b'\x02'
+                        msg_t6 = monta_mensagem(head=b'\x06\x00\x00' + type_error + b'\x00\x00'+ bytes([i]) + b'\x00\x00\x00')
+                        com1.sendData(msg_t6)
+                        start_time = time.time()
+                    print("CCCCCCCCCCCCCCCCCC")
+                    break
+                # else:
+                #     msg_t5 = monta_mensagem(head=b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+                #     com1.sendData(msg_t5)
+
+                #     print("-------------------------------------")
+                #     print("Tempo excedido! Comunicação encerrada")
+                #     print("-------------------------------------")
+                #     com1.disable()
+                #     sai = False
+                #     break
+            
+            msg_t4 = monta_mensagem(head=b'\x04'+ bytes([i]) + b'\x00\x00\x00\x00\x00\x00\x00\x00\x00')
             com1.sendData(msg_t4)
+            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+            
 
             with open(nome_copia, 'a') as file:
                 file.write(str(msg_t3_payload))
 
-            com1.sendData(msg_t4)
-            time.sleep(.1)
+            print("BBBBBBBBBBBBBBBBBBBBBBB", sai)
+
             i += 1
 
         # mensagem = b'\x01'
@@ -101,8 +119,7 @@ def main():
         com1.disable()
         
     except Exception as erro:
-        print("ops! :-\\")
-        print(erro)
+        print(f"ops! :-{traceback.format_exc()}")
         com1.disable()
         
 

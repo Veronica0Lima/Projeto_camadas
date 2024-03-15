@@ -28,6 +28,11 @@ def monta_mensagem(head, payload = b'', eop = b'\xFF\xaa\xff\xaa'):
     mensagem = head + payload + eop
     return mensagem
 
+def verifica_eop(eop_recebido, eop = b'\xFF\xaa\xff\xaa'):
+    if eop_recebido == eop:
+        return True
+    return False
+
 def main():
     try:
         print("Iniciou o main")
@@ -44,6 +49,7 @@ def main():
         eop = b'\xFF\xaa\xff\xaa'
         i1 = 1
         i2 = 1
+        sai = True
 
         
         packages_f = divisor_bytes(imgD)
@@ -66,6 +72,7 @@ def main():
 
                 # pegando o identificador do pacote atual
                 id_atual = i1.to_bytes(1, byteorder='big')
+                print("AAAAAAAAAAAAAAAAAAAAAAAA", i1)
 
                 # pegando o tamanho do pacote
                 pacote_atual = packages_f[i1-1]
@@ -82,22 +89,32 @@ def main():
                 tempo_inicial = time.time()
 
                 # Loop para aguardar a resposta com timeout de 5 segundos
-                while True:
+                while sai:
                     l = com1.rx.getBufferLen()
                     if l > 0 and (time.time() - start_time) < 3 and (time.time() - tempo_inicial) < 10:
+                        print("RECEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
                         
-                        resposta_intermediaria, _ = com1.getData(10)
+                        resposta_intermediaria, a = com1.getData(10)
+                        print(resposta_intermediaria, a)
+                        eop = verifica_eop(resposta_intermediaria[-4:])
+                        print("GGGGGGGGGGGGG", resposta_intermediaria[0])
 
                         # Caso o server mande que recebeu com erro - manda o mesmo pacote de novo
                         if resposta_intermediaria[0] == 6:
-                            if resposta_intermediaria[1] == i1:
-                                break
+                            #if resposta_intermediaria[1] == i1:
+                            print(66666666666666666666666666666666666666)
+                            sai = False
+                            com1.clearBuffer()
+                            break
 
                         # Indo para o próximo arquivo caso o server diga que ta tudo ok 
                         elif resposta_intermediaria[0] == 4:
-                            if resposta_intermediaria[1] == i1:
-                                i1 += 1
-                                break
+                            #if resposta_intermediaria[1] == i1:
+                            print(4444444444444444444444444444444444)
+                            i1 += 1
+                            sai = True
+                            com1.clearBuffer()
+                            break
 
                     elif time.time() - start_time >= 3:
                         com1.sendData(mensagem3)
@@ -105,14 +122,15 @@ def main():
 
                     elif time.time() - tempo_inicial >= 10:
                         print("-------------------------")
-                        print(" Tempo excedido. Comunicação encerrada")
+                        print(" Tempo excedido.")
                         print("-------------------------")
                         head5 = b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00'
                         mensagem5 = monta_mensagem(head5)
                         com1.sendData(mensagem5)
-                        com1.disable()
+                        sai = False
                         break
-                
+                if sai == False:
+                    break
 
 
         # Encerra comunicação
