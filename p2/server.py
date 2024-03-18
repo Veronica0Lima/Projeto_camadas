@@ -194,10 +194,6 @@ def main():
 
         with open(nome_copia, 'wb') as file:
             file.write(data_img)
-        mensagem = b'\x01'
-        time.sleep(.1)
-        com1.sendData(mensagem)
-        time.sleep(.2)
 
         msg_t1, _ = com1.getData(14)
 
