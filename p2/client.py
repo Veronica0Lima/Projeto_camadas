@@ -12,7 +12,7 @@ import random
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM4"                  # Windows(variacao de)
+serialName = "COM7"                  # Windows(variacao de)
 
 def divisor_bytes(nome_arquivo, tamanho_pacote=140):
     with open(nome_arquivo, 'rb') as arquivo_origem:
@@ -104,7 +104,8 @@ def main():
                             if resposta_intermediaria[3] == 1:
                                 mensagem = "o erro foi no tamanho do arquivo, no pacote {0}, as {1}\n".format(i1, time.time()) 
                             else:
-                                mensagem = "o erro foi na ordem do pacote, no pacote {0}, as {1}\n".format(i1, time.time()) 
+                                mensagem = "o erro foi na ordem do pacote, no pacote {0}, as {1}\n".format(i1, time.time())
+                                i1 = int(resposta_intermediaria[6])
                             with open("log1_client.txt", "a") as arquivo:
                                 arquivo.write(mensagem)
                             com1.rx.clearBuffer()
@@ -145,6 +146,7 @@ def main():
 
         # Mandando mensagem avisando que vai começar
         print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        name_f = b'\x02'
         head1 = b'\x01\x00'+ size_pl + name_f + b'\x00\x00\x00\x00\x00\x00'
         mensagem1 = monta_mensagem(head1)
         
@@ -191,7 +193,8 @@ def main():
                             if resposta_intermediaria[3] == 1:
                                 mensagem = "o erro foi no tamanho do arquivo, no pacote {0}, as {1}\n".format(i2, time.time()) 
                             else:
-                                mensagem = "o erro foi na ordem do pacote, no pacote {0}, as {1}\n".format(i2, time.time()) 
+                                mensagem = "o erro foi na ordem do pacote, no pacote {0}, as {1}\n".format(i2, time.time())
+                                i2 = int(resposta_intermediaria[6]) 
                             with open("log2_client.txt", "a") as arquivo:
                                 arquivo.write(mensagem)
                             break

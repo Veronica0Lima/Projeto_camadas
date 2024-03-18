@@ -14,7 +14,7 @@ import traceback
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM6"                  # Windows(variacao de)
+serialName = "COM5"                  # Windows(variacao de)
 
 def monta_mensagem(head, payload = b'', eop = b'\xFF\xaa\xff\xaa'):
     mensagem = head + payload + eop
@@ -200,8 +200,6 @@ def main():
         time.sleep(.2)
 
         msg_t1, _ = com1.getData(14)
-
-
 
         id = msg_t1[0] 
         total_pacotes = msg_t1[2]
