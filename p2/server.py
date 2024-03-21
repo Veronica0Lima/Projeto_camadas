@@ -110,7 +110,7 @@ def main():
                     sai = False
                     break
 
-                if mensagem_invalida:
+                if mensagem_invalida and l>0:
                     if msg_t3_eop != eop:
                             type_error = b'\x01'
                             mensagem = "o erro foi no tamanho do arquivo, no pacote {0}, as {1}\n".format(i+1, time.time())
@@ -142,12 +142,14 @@ def main():
 
                     if msg_t3_eop == eop and (id == i+1):
                         mensagem_invalida = False
+                        start_time = time.time()
+
                         msg_t4 = monta_mensagem(head=b'\x04'+ bytes([i+1]) + b'\x00\x00\x00\x00\x00\x00\x00\x00')
                         com1.sendData(msg_t4)            
                         data_img += msg_t3_payload
                         break
-                    else:
-                        start_time = time.time()
+                    # else:
+                    #     start_time = time.time()
 
             i += 1
 
@@ -244,12 +246,14 @@ def main():
 
                     if msg_t3_eop == eop and (id == i+1):
                         mensagem_invalida = False
+                        start_time = time.time()
                         msg_t4 = monta_mensagem(head=b'\x04'+ bytes([i+1]) + b'\x00\x00\x00\x00\x00\x00\x00'+crc_byte)
+
                         com1.sendData(msg_t4)            
                         data_img += msg_t3_payload
                         break
-                    else:
-                        start_time = time.time()
+                    # else:
+                    #     start_time = time.time()
 
             i += 1
 
