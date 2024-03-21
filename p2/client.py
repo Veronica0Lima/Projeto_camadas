@@ -13,7 +13,7 @@ from crc import Calculator, Crc8
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM6"                  # Windows(variacao de)
+serialName = "COM5"                  # Windows(variacao de)
 
 def divisor_bytes(nome_arquivo, tamanho_pacote=140):
     with open(nome_arquivo, 'rb') as arquivo_origem:
