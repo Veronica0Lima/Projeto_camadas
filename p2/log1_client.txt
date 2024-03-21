@@ -130,3 +130,4 @@ o erro foi no tamanho do arquivo, no pacote 18, as 1711044007.8102207
 =======
 o erro foi na ordem do pacote, no pacote 12, as 1711043441.465248
 >>>>>>> 69acf7b0aa354c9ee56265b25aae8660f9cf7fe7
+o erro foi na ordem do pacote, no pacote 24, as 1711044954.4224498
