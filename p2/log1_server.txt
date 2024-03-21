@@ -108,3 +108,22 @@ o erro foi na ordem do pacote, no pacote 11, as 1711040809.267835
 o erro foi na ordem do pacote, no pacote 8, as 1711041343.7602785
 o erro foi na ordem do pacote, no pacote 6, as 1711041730.241117
 o erro foi na ordem do pacote, no pacote 7, as 1711041770.9099553
+o erro foi na ordem do pacote, no pacote 87, as 1711042864.8269293
+o arquivo está corrompido, no pacote 1, as 1711043990.0051196
+o arquivo está corrompido, no pacote 2, as 1711043990.879474
+o arquivo está corrompido, no pacote 3, as 1711043991.9094894
+o arquivo está corrompido, no pacote 4, as 1711043992.8282967
+o arquivo está corrompido, no pacote 5, as 1711043993.861542
+o arquivo está corrompido, no pacote 6, as 1711043994.9981787
+o arquivo está corrompido, no pacote 7, as 1711043996.1554565
+o arquivo está corrompido, no pacote 8, as 1711043997.1867502
+o arquivo está corrompido, no pacote 9, as 1711043998.1831539
+o arquivo está corrompido, no pacote 10, as 1711043999.239908
+o arquivo está corrompido, no pacote 11, as 1711044000.082449
+o arquivo está corrompido, no pacote 12, as 1711044001.1920943
+o arquivo está corrompido, no pacote 13, as 1711044002.329429
+o arquivo está corrompido, no pacote 14, as 1711044003.3734882
+o arquivo está corrompido, no pacote 15, as 1711044004.229131
+o arquivo está corrompido, no pacote 16, as 1711044005.3863938
+o arquivo está corrompido, no pacote 17, as 1711044006.3215752
+o arquivo está corrompido, no pacote 18, as 1711044007.4661896

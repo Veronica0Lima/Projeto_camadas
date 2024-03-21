@@ -2,6 +2,7 @@ from enlace import *
 import time
 import numpy as np
 import random
+from crc import Calculator, Crc8
 
 
 # voce deverá descomentar e configurar a porta com através da qual ira fazer comunicaçao
@@ -12,7 +13,7 @@ import random
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM7"                  # Windows(variacao de)
+serialName = "COM6"                  # Windows(variacao de)
 
 def divisor_bytes(nome_arquivo, tamanho_pacote=140):
     with open(nome_arquivo, 'rb') as arquivo_origem:
@@ -51,6 +52,7 @@ def main():
         i1 = 1
         i2 = 1
         sai = True
+        calculator = Calculator(Crc8.CCITT, optimized=True)
 
         
         packages_f = divisor_bytes(imgD)
@@ -80,8 +82,11 @@ def main():
                 tam_pac = len(pacote_atual)
                 tam_pac = tam_pac.to_bytes(1, byteorder='big')
 
+                crc = calculator.checksum(pacote_atual)
+                crc_byte = crc.to_bytes(1, byteorder='big')
+
                 #monstando a mensagem e enviando 
-                head3 = b'\x03' + id_atual + size_pl + name_f + tam_pac + b'\x00\x00\x00\x00\x00'
+                head3 = b'\x03' + id_atual + size_pl + name_f + tam_pac + b'\x00\x00\x00\x00' + crc_byte
 
                 mensagem3 = monta_mensagem(head3, pacote_atual)
 
@@ -103,6 +108,9 @@ def main():
                             #com1.clearBuffer()
                             if resposta_intermediaria[3] == 1:
                                 mensagem = "o erro foi no tamanho do arquivo, no pacote {0}, as {1}\n".format(i1, time.time()) 
+                            elif resposta_intermediaria[3] == 3:
+                                mensagem = "o arquivo foi corrompido, no pacote {0}, as {1}\n".format(i1, time.time()) 
+                                i1 = int(resposta_intermediaria[6])
                             else:
                                 mensagem = "o erro foi na ordem do pacote, no pacote {0}, as {1}\n".format(i1, time.time())
                                 i1 = int(resposta_intermediaria[6])
@@ -169,8 +177,11 @@ def main():
                 tam_pac = len(pacote_atual)
                 tam_pac = tam_pac.to_bytes(1, byteorder='big')
 
+                crc = calculator.checksum(pacote_atual)
+                crc_byte = crc.to_bytes(1, byteorder='big')
+
                 #monstando a mensagem e enviando 
-                head3 = b'\x03' + id_atual + size_pl + name_f + tam_pac + b'\x00\x00\x00\x00\x00'
+                head3 = b'\x03' + id_atual + size_pl + name_f + tam_pac + b'\x00\x00\x00\x00' + crc_byte
 
                 mensagem3 = monta_mensagem(head3, pacote_atual)
 
@@ -192,6 +203,9 @@ def main():
                             #com1.clearBuffer()
                             if resposta_intermediaria[3] == 1:
                                 mensagem = "o erro foi no tamanho do arquivo, no pacote {0}, as {1}\n".format(i2, time.time()) 
+                            elif resposta_intermediaria[3] == 3:
+                                mensagem = "o arquivo foi corrompido, no pacote {0}, as {1}\n".format(i1, time.time()) 
+                                i2 = int(resposta_intermediaria[6]) 
                             else:
                                 mensagem = "o erro foi na ordem do pacote, no pacote {0}, as {1}\n".format(i2, time.time())
                                 i2 = int(resposta_intermediaria[6]) 
