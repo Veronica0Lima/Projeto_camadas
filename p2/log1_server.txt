@@ -151,3 +151,11 @@ o erro foi na ordem do pacote, no pacote 26, as 1711043459.3464684
 o erro foi na ordem do pacote, no pacote 26, as 1711043459.4860158
 >>>>>>> 69acf7b0aa354c9ee56265b25aae8660f9cf7fe7
 o erro foi na ordem do pacote, no pacote 25, as 1711044954.1229515
+o erro foi na ordem do pacote, no pacote 9, as 1711045719.4426327
+o erro foi na ordem do pacote, no pacote 9, as 1711045725.4100137
+o erro foi na ordem do pacote, no pacote 9, as 1711045726.4539938
+o erro foi na ordem do pacote, no pacote 9, as 1711045726.5648825
+o erro foi na ordem do pacote, no pacote 10, as 1711046077.960545
+o erro foi na ordem do pacote, no pacote 10, as 1711046084.027045
+o erro foi na ordem do pacote, no pacote 10, as 1711046084.9301324
+o erro foi na ordem do pacote, no pacote 10, as 1711046085.1185927

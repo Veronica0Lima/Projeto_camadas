@@ -13,7 +13,7 @@ from crc import Calculator, Crc8
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM5"                  # Windows(variacao de)
+serialName = "COM6"                  # Windows(variacao de)
 
 def divisor_bytes(nome_arquivo, tamanho_pacote=140):
     with open(nome_arquivo, 'rb') as arquivo_origem:
@@ -53,6 +53,7 @@ def main():
         i2 = 1
         sai = True
         calculator = Calculator(Crc8.CCITT, optimized=True)
+        eae = True 
 
         
         packages_f = divisor_bytes(imgD)
@@ -140,6 +141,7 @@ def main():
                         mensagem5 = monta_mensagem(head5)
                         com1.sendData(mensagem5)
                         sai = False
+                        eae = False
                         break
                 print(head3)
                 if sai == False:
@@ -153,7 +155,6 @@ def main():
         size_pl = tam_pl.to_bytes(1, byteorder='big')
 
         # Mandando mensagem avisando que vai começar
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         name_f = b'\x02'
         head1 = b'\x01\x00'+ size_pl + name_f + b'\x00\x00\x00\x00\x00\x00'
         mensagem1 = monta_mensagem(head1)
@@ -164,7 +165,7 @@ def main():
         resposta_inicial, _ = com1.getData(14)
         print(resposta_inicial)
 
-        if resposta_inicial[0] == 2:
+        if resposta_inicial[0] == 2 and eae:
 
             while i2 <= tam_pl:
                 print("CCCCCCCCCCCCCCCCC", i2)

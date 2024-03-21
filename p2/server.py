@@ -15,7 +15,7 @@ from crc import Calculator, Crc8
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM7"                  # Windows(variacao de)
+serialName = "COM4"                  # Windows(variacao de)
 
 def monta_mensagem(head, payload = b'', eop = b'\xFF\xaa\xff\xaa'):
     mensagem = head + payload + eop
@@ -42,6 +42,7 @@ def main():
 
         # while (time.time() - time_control) < 10:
         msg_t1, _ = com1.getData(14)
+        eae = True 
         #     time.sleep(.1)
 
         #     if(msg_t1[0] == 1):
@@ -109,6 +110,7 @@ def main():
                     print("-------------------------------------")
                     com1.disable()
                     sai = False
+                    eae = False
                     break
 
                 if mensagem_invalida and l>0:
@@ -152,6 +154,8 @@ def main():
                     # else:
                     #     start_time = time.time()
 
+            if eae is False: break
+
             i += 1
 
         with open(nome_copia, 'wb') as file:
@@ -176,7 +180,7 @@ def main():
 
         data_img = bytearray([])
         
-        while i < total_pacotes and sai:
+        while i < total_pacotes and sai and eae:
             mensagem_invalida = False
             start_time = time.time()
             while True:
