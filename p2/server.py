@@ -235,13 +235,12 @@ def main():
         data_img = bytearray([])
         
         while i < total_pacotes and sai:
-            mensagem_invalida = True
-            while mensagem_invalida:
-                #if(time.time() - start_time < 10):
+            mensagem_invalida = False
+            start_time = time.time()
+            while True:
                 l = com1.rx.getBufferLen()
-                start_time = time.time()
-                while (time.time() - start_time < 10):
-                    msg_t3_head, _ = com1.getData(10) 
+                if (time.time() - start_time < 10) and l > 0 and not mensagem_invalida:
+                    msg_t3_head, _ = com1.getData(10)
                     print(msg_t3_head)
 
                     id = msg_t3_head[1]
@@ -253,25 +252,16 @@ def main():
                     print(id)
                     print(i)
 
-                    if msg_t3_eop == eop and (id == i+1):
-                        mensagem_invalida = False
-                    else:
-                        if msg_t3_eop != eop:
-                            type_error = b'\x01'
-                            mensagem = "o erro foi no tamanho do arquivo, no pacote {0}, as {1}\n".format(i, time.time())
-
-                        else:
-                            type_error = b'\x02'
-                            mensagem = "o erro foi na ordem do pacote, no pacote {0}, as {1}\n".format(i, time.time()) 
-                            
-                        print(mensagem)
-                        with open("log2_server.txt", "a") as arquivo:
-                            arquivo.write(mensagem)
-                        msg_t6 = monta_mensagem(head=b'\x06\x00\x00' + type_error + b'\x00\x00'+ bytes([i]) + b'\x00\x00\x00')
-                        com1.sendData(msg_t6)
+                    if msg_t3_eop != eop or (id != i+1):
+                        mensagem_invalida = True
                         start_time = time.time()
-                    break
-                else:
+                    else:
+                        msg_t4 = monta_mensagem(head=b'\x04'+ bytes([i]) + b'\x00\x00\x00\x00\x00\x00\x00\x00')
+                        com1.sendData(msg_t4)            
+                        data_img += msg_t3_payload
+                        break
+
+                elif time.time() - start_time > 10:
                     msg_t5 = monta_mensagem(head=b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00')
                     com1.sendData(msg_t5)
 
@@ -281,10 +271,41 @@ def main():
                     com1.disable()
                     sai = False
                     break
-            
-            msg_t4 = monta_mensagem(head=b'\x04'+ bytes([i]) + b'\x00\x00\x00\x00\x00\x00\x00\x00')
-            com1.sendData(msg_t4)            
-            data_img += msg_t3_payload
+
+                if mensagem_invalida:
+                    if msg_t3_eop != eop:
+                            type_error = b'\x01'
+                            mensagem = "o erro foi no tamanho do arquivo, no pacote {0}, as {1}\n".format(i+1, time.time())
+
+                    else:
+                        type_error = b'\x02'
+                        mensagem = "o erro foi na ordem do pacote, no pacote {0}, as {1}\n".format(i+1, time.time()) 
+                        
+                    print(mensagem)
+                    with open("log1_server.txt", "a") as arquivo:
+                        arquivo.write(mensagem)
+                    msg_t6 = monta_mensagem(head=b'\x06\x00\x00' + type_error + b'\x00\x00'+ bytes([i+1]) + b'\x00\x00\x00')
+                    com1.sendData(msg_t6)
+
+                    msg_t3_head, _ = com1.getData(10)
+                    print(msg_t3_head)
+
+                    id = msg_t3_head[1]
+
+                    payload_size = msg_t3_head[4]
+
+                    msg_t3_payload, _ = com1.getData(payload_size)
+                    msg_t3_eop, _ = com1.getData(4)
+
+                    if msg_t3_eop == eop and (id == i+1):
+                        mensagem_invalida = False
+                        msg_t4 = monta_mensagem(head=b'\x04'+ bytes([i+1]) + b'\x00\x00\x00\x00\x00\x00\x00\x00')
+                        com1.sendData(msg_t4)            
+                        data_img += msg_t3_payload
+                        break
+                    else:
+                        start_time = time.time()
+
             i += 1
 
         with open(nome_copia, 'wb') as file:

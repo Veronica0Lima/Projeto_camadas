@@ -106,3 +106,5 @@ o erro foi na ordem do pacote, no pacote 11, as 1711040807.9427557
 o erro foi na ordem do pacote, no pacote 11, as 1711040808.7064655
 o erro foi na ordem do pacote, no pacote 11, as 1711040809.267835
 o erro foi na ordem do pacote, no pacote 8, as 1711041343.7602785
+o erro foi na ordem do pacote, no pacote 6, as 1711041730.241117
+o erro foi na ordem do pacote, no pacote 7, as 1711041770.9099553
