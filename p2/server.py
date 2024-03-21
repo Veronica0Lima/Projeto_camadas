@@ -166,19 +166,30 @@ def main():
                         data_img += msg_t3_payload
                         break
 
-                elif mensagem_invalida:
+                elif time.time() - start_time > 10:
+                    msg_t5 = monta_mensagem(head=b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+                    com1.sendData(msg_t5)
+
+                    print("-------------------------------------")
+                    print("Tempo excedido! Comunicação encerrada")
+                    print("-------------------------------------")
+                    com1.disable()
+                    sai = False
+                    break
+
+                if mensagem_invalida:
                     if msg_t3_eop != eop:
                             type_error = b'\x01'
-                            mensagem = "o erro foi no tamanho do arquivo, no pacote {0}, as {1}\n".format(i, time.time())
+                            mensagem = "o erro foi no tamanho do arquivo, no pacote {0}, as {1}\n".format(i+1, time.time())
 
                     else:
                         type_error = b'\x02'
-                        mensagem = "o erro foi na ordem do pacote, no pacote {0}, as {1}\n".format(i, time.time()) 
+                        mensagem = "o erro foi na ordem do pacote, no pacote {0}, as {1}\n".format(i+1, time.time()) 
                         
                     print(mensagem)
                     with open("log1_server.txt", "a") as arquivo:
                         arquivo.write(mensagem)
-                    msg_t6 = monta_mensagem(head=b'\x06\x00\x00' + type_error + b'\x00\x00'+ bytes([i]) + b'\x00\x00\x00')
+                    msg_t6 = monta_mensagem(head=b'\x06\x00\x00' + type_error + b'\x00\x00'+ bytes([i+1]) + b'\x00\x00\x00')
                     com1.sendData(msg_t6)
 
                     msg_t3_head, _ = com1.getData(10)
@@ -193,24 +204,13 @@ def main():
 
                     if msg_t3_eop == eop and (id == i+1):
                         mensagem_invalida = False
-                        msg_t4 = monta_mensagem(head=b'\x04'+ bytes([i]) + b'\x00\x00\x00\x00\x00\x00\x00\x00')
+                        msg_t4 = monta_mensagem(head=b'\x04'+ bytes([i+1]) + b'\x00\x00\x00\x00\x00\x00\x00\x00')
                         com1.sendData(msg_t4)            
                         data_img += msg_t3_payload
                         break
                     else:
                         start_time = time.time()
 
-                elif time.time() - start_time > 10:
-                    msg_t5 = monta_mensagem(head=b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00')
-                    com1.sendData(msg_t5)
-
-                    print("-------------------------------------")
-                    print("Tempo excedido! Comunicação encerrada")
-                    print("-------------------------------------")
-                    com1.disable()
-                    sai = False
-                    break
-                
             i += 1
 
         with open(nome_copia, 'wb') as file:
